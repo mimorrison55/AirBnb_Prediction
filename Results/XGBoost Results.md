@@ -4,14 +4,14 @@
 CLASS WEIGHTS: {0: 28.21933962264151, 1: 4.471225710014948, 2: 1.9849037823490379, 3: 0.30891769079830633}
 
 ## Listing Performance Metrics: 
-Train Accuracy:  0.8089427496865859
-Test Accuracy:  0.7449866310160428
-Train Precision:  0.8895575112013252
-Test Precision:  0.8552625905770644
-Train Recall:  0.8089427496865859
-Test Recall:  0.7449866310160428
-Train F1-Score:  0.831017362543198
-Test F1-Score:  0.7828073517613781
+* Train Accuracy:  0.8089427496865859
+* Test Accuracy:  0.7449866310160428
+* Train Precision:  0.8895575112013252
+* Test Precision:  0.8552625905770644
+* Train Recall:  0.8089427496865859
+* Test Recall:  0.7449866310160428
+* Train F1-Score:  0.831017362543198
+* Test F1-Score:  0.7828073517613781
 
 ## Classification Report for Train Set: 
               precision    recall  f1-score   support
