@@ -4,7 +4,6 @@
 CLASS WEIGHTS: {0: 28.21933962264151, 1: 4.471225710014948, 2: 1.9849037823490379, 3: 0.30891769079830633}
 
 ## Performance Metrics
-**Listing Performance Metrics:** 
 * **Train Accuracy:**  0.8195570413706644
 * **Test Accuracy:**  0.759024064171123
 * **Train Precision:**  0.8948924130377177
