@@ -4,10 +4,10 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# geospatial analysis files
-import geopandas as gpd
-from shapely.geometry import Point
-from shapely.ops import nearest_points
+# # geospatial analysis files
+# import geopandas as gpd
+# from shapely.geometry import Point
+# from shapely.ops import nearest_points
 
 # Data Processing Imports
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -287,7 +287,7 @@ print(f"SUPER HOST: {listing['host_is_superhost'].value_counts()}")
 plt.figure(figsize=(8, 6))
 sns.countplot(x='host_response_time', data=listing, palette='viridis')
 plt.title('Distribution of Host Response Time')
-plt.xlabel('Is Superhost')
+plt.xlabel('Host Response Time')
 plt.ylabel('Count')
 plt.xticks(rotation=45)  # Rotate labels if necessary
 plt.tight_layout()  # Adjust layout to avoid overlapping
@@ -362,7 +362,7 @@ XGBoost Model for Demographics Data
 '''
 print("XGBoost")
 # Prepare X and y for demographics data
-predictors = listing.columns.drop(['id', 'host_response_time']).tolist()
+predictors = listing.columns.drop(['Unnamed: 0','id', 'host_response_time', 'host_listings_count', 'host_total_listings_count', 'bedrooms', 'beds', 'minimum_minimum_nights', 'maximum_minimum_nights', 'minimum_maximum_nights', 'maximum_maximum_nights', 'minimum_nights_avg_ntm', 'maximum_nights_avg_ntm', 'calculated_host_listings_count_private_rooms']).tolist()
 
 # Get a list of categorical features (based on dtype 'object' or low unique values)
 cat = listing[predictors].select_dtypes(include=['object', 'bool']).columns.tolist()
@@ -373,6 +373,8 @@ cont = listing[predictors].select_dtypes(include=['int64', 'float64']).columns.t
 # Print the feature names
 print("Categorical feature names:", cat)
 print("Continuous feature names:", cont)
+
+print(f"PREDICTORS: {predictors}")
 
 X = listing[predictors]
 y = listing['host_response_time']
