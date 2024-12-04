@@ -99,27 +99,115 @@ cont = listing.select_dtypes(include=['int64', 'float64']).columns.tolist()
 
 cont_df = listing[cont]
 
-def show_heatmap(data, string):
-    plt.figure(figsize=(20,10))
-    plt.matshow(data.corr())
-    plt.xticks(range(data.shape[1]), data.columns, fontsize=14, rotation=90)
-    plt.gca().xaxis.tick_bottom()
-    plt.yticks(range(data.shape[1]), data.columns, fontsize=14)
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=14)
-    plt.title("Feature Correlation Heatmap", fontsize=14)
-    plt.savefig(string)
-    plt.show()
+def show_heatmap(data, output_filename):
+    """
+    Create a correlation heatmap for the given dataset.
+    
+    Args:
+        data (pd.DataFrame): Input DataFrame to compute correlations
+        output_filename (str): Path where the heatmap will be saved
+    """
+    import seaborn as sns
+    import matplotlib.pyplot as plt
 
-show_heatmap(cont_df, "my_plot.png")
+    # Compute the correlation matrix
+    corr_matrix = data.corr()
+
+    # Create the figure and axes with increased size to accommodate annotations
+    plt.figure(figsize=(25, 15))  # Increased figure size
+
+    # Use seaborn for a more aesthetic heatmap
+    sns.heatmap(
+        corr_matrix, 
+        annot=True,  # Add correlation values in each cell
+        cmap='coolwarm',  # Diverging colormap (blue to red)
+        center=0,  # Center colormap at 0
+        square=True,  # Make the plot square
+        linewidths=0.5,  # Add lines between cells
+        cbar_kws={"shrink": .8},  # Slightly reduce colorbar size
+        fmt=".2f",  # Format correlation values to 2 decimal places
+        annot_kws={
+            "size": 8,  # Adjust font size
+            "weight": "bold",  # Make text bold
+            "ha": "center",  # Horizontal alignment
+            "va": "center"  # Vertical alignment
+        }
+    )
+
+    plt.title("Feature Correlation Heatmap", fontsize=16)
+    plt.tight_layout()
+    
+    # Save the figure
+    plt.savefig(output_filename, bbox_inches='tight', dpi=300)
+    
+    # Close the plot to free up memory
+    plt.close()
+
+show_heatmap(cont_df, "XGBoost_heatmap.png")
+
+def show_box_whisker_plots(data, output_filename):
+    """
+    Create box and whisker plots for all continuous features.
+    
+    Args:
+        data (pd.DataFrame): Input DataFrame with continuous features
+        output_filename (str): Path where the plots will be saved
+    """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # Determine number of continuous features
+    cont_features = data.select_dtypes(include=['float64', 'float32', 'int64', 'int32']).columns
+
+    # Calculate number of rows and columns for subplots
+    n_features = len(cont_features)
+    n_cols = 4  # 4 plots per row
+    n_rows = (n_features + n_cols - 1) // n_cols  # Ceiling division
+
+    # Create figure with subplots
+    fig, axes = plt.subplots(
+        nrows=n_rows, 
+        ncols=n_cols, 
+        figsize=(20, 4 * n_rows),  # Adjust figure size based on number of rows
+        squeeze=False  # Ensure axes is always a 2D array
+    )
+
+    # Flatten axes for easier iteration
+    axes = axes.ravel()
+
+    # Create box plots for each continuous feature
+    for i, feature in enumerate(cont_features):
+        sns.boxplot(
+            x=data[feature], 
+            ax=axes[i],
+            color='skyblue',
+            width=0.5
+        )
+        
+        # Set title and labels
+        axes[i].set_title(f'Box Plot - {feature}')
+        axes[i].set_xlabel('Value')
+
+    # Remove any unused subplots
+    for j in range(i + 1, len(axes)):
+        fig.delaxes(axes[j])
+
+    # Adjust layout and save
+    plt.tight_layout()
+    plt.savefig(output_filename, bbox_inches='tight', dpi=300)
+    
+    # Close the plot to free up memory
+    plt.close()
+
+show_box_whisker_plots(cont_df, "XGBoost_box_whiskers.png")
 
 # Drop NaNs in crucial columns
 listing = listing.dropna()
 
 print(listing.head())
 
-# # export the final dataset
-# listing.to_csv("FINAL_listing_wo_dist.csv")
+# export the final dataset
+listing.to_csv("FINAL_listing_wo_dist.csv")
 
 '''
 Feature Engineering for Listing
@@ -172,13 +260,13 @@ listing.loc[:, 'Distance_to_Coast'] = listing.apply(
 # Check the dataset values
 print(listing.head())
 
-# # export the final dataset
-# listing.to_csv("FINAL_listing_w_dis.csv")
+# export the final dataset
+listing.to_csv("FINAL_listing_w_dis.csv")
 
 '''
 CHECKPOINT
 '''
-# listing = pd.read_csv('FINAL_listing_w_dist.csv')
+listing = pd.read_csv('FINAL_listing_w_dist.csv')
 
 print(listing.head())
 print(listing.shape)
@@ -206,12 +294,75 @@ plt.tight_layout()  # Adjust layout to avoid overlapping
 plt.savefig("host_response_time_distribution.png")  # Save as PNG
 plt.show()  # Show the plot
 
+def handle_outliers(data, method='iqr'):
+    """
+    Handle outliers in the dataset using different methods.
+    
+    Args:
+        data (pd.DataFrame): Input DataFrame
+        method (str): Method to handle outliers
+    
+    Returns:
+        pd.DataFrame: Processed DataFrame
+    """
+    import numpy as np
+
+    # Create a copy of the data to avoid modifying the original
+    processed_data = data.copy()
+
+    # Determine continuous features
+    cont_features = data.select_dtypes(include=['float64', 'float32', 'int64', 'int32']).columns
+
+    cont_features.drop(['longitude', 'latitude'])
+
+    for feature in cont_features:
+        # Interquartile Range (IQR) Method
+        if method == 'iqr':
+            Q1 = data[feature].quantile(0.25)
+            Q3 = data[feature].quantile(0.75)
+            IQR = Q3 - Q1
+            
+            # Define bounds
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+            
+            # Remove or cap outliers
+            processed_data[feature] = np.clip(data[feature], lower_bound, upper_bound)
+
+        
+        # Z-Score Method
+        elif method == 'zscore':
+            mean = data[feature].mean()
+            std = data[feature].std()
+            z_threshold = 3  # Standard deviation threshold
+            
+            processed_data[feature] = np.where(
+                np.abs((data[feature] - mean) / std) > z_threshold,
+                mean,  # Replace with mean
+                data[feature]
+            )
+        
+        # Percentile Method
+        elif method == 'percentile':
+            lower = data[feature].quantile(0.01)
+            upper = data[feature].quantile(0.99)
+            
+            processed_data[feature] = data[feature].clip(lower, upper)
+
+    return processed_data
+
+# Choose and apply a method
+listing = handle_outliers(listing, method='iqr')
+
+print(f"HEAD: {listing.head()}")
+
+print(f"SHAPE: {listing.shape}")
 '''
 XGBoost Model for Demographics Data
 '''
 print("XGBoost")
 # Prepare X and y for demographics data
-predictors = listing.columns.drop(['Unnamed: 0', 'id', 'host_response_time']).tolist()
+predictors = listing.columns.drop(['id', 'host_response_time']).tolist()
 
 # Get a list of categorical features (based on dtype 'object' or low unique values)
 cat = listing[predictors].select_dtypes(include=['object', 'bool']).columns.tolist()
