@@ -4,4 +4,3 @@ tensorflow==2.10.1
 streamlit
 matplotlib
 scikit-learn
-python==3.8.10
