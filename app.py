@@ -185,7 +185,7 @@ def main():
         margin-top: -10px; /* Adjust spacing above */
     }
     h2 {
-        color: white; /* Less dark blue for subheaders */
+        color: black; /* Less dark blue for subheaders */
     }
     
     /* DataFrame Styling */
