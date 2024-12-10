@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime, timedelta
 from joblib import load
+import os
 
 # Load the saved model
 @st.cache_resource
