@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 def load_model():
     return tf.keras.models.load_model('LSTM_model.h5')
 
-def load_scalers(directory='./'):
+def load_scalers(directory='./model_files'):
     """Load scalers from files"""
     scaler_X = load(os.path.join(directory, 'scaler_X.joblib'))
     scaler_y = load(os.path.join(directory, 'scaler_y.joblib'))
