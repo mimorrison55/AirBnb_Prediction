@@ -11,26 +11,16 @@ from datetime import datetime, timedelta
 def load_model():
     return tf.keras.models.load_model('LSTM_model.h5')
 
-# Create scalers with caching
-@st.cache_resource
-def create_scalers():
-    # Recreate the scalers with the same configuration as during training
-    scaler_X = MinMaxScaler()
-    scaler_y = MinMaxScaler()
-    
-    # You'll need to provide some sample data to fit the scalers
-    # This should match the training data preprocessing
-    sample_features = np.random.rand(100, 10)  # 10 features used in training
-    sample_target = np.random.rand(100, 1)
-    
-    scaler_X.fit(sample_features)
-    scaler_y.fit(sample_target)
-    
+def load_scalers(directory='./model_files'):
+    """Load scalers from files"""
+    scaler_X = load(os.path.join(directory, 'scaler_X.joblib'))
+    scaler_y = load(os.path.join(directory, 'scaler_y.joblib'))
     return scaler_X, scaler_y
 
 # Cached model and scalers
 model = load_model()
-scaler_X, scaler_y = create_scalers()
+
+scaler_X, scaler_y = load_scalers()
 
 def generate_feature_engineering(start_date, avg_price, min_nights, max_nights):
     """
@@ -84,23 +74,23 @@ def generate_feature_engineering(start_date, avg_price, min_nights, max_nights):
     return df[features].values
 
 def predict_prices(start_date, avg_price, min_nights, max_nights):
-    """
-    Predict prices for the next 7 days
-    """
     # Generate features
     features = generate_feature_engineering(start_date, avg_price, min_nights, max_nights)
     
-    # Reshape for LSTM input (add batch and time steps)
-    features_reshaped = features.reshape(1, 14, 10)
+    # Ensure correct scaling
+    # Option 1: Scale each time step individually
+    features_scaled = np.array([scaler_X.transform(step.reshape(1, -1)).flatten() for step in features])
     
-    # Scale features
-    features_scaled = scaler_X.transform(features_reshaped.reshape(-1, 10)).reshape(features_reshaped.shape)
+    # Reshape for LSTM input
+    features_scaled = features_scaled.reshape(1, 14, 10)
     
     # Predict
     predictions_scaled = model.predict(features_scaled)
     
     # Inverse transform predictions
     predictions = scaler_y.inverse_transform(predictions_scaled)
+
+    predictions = predictions / 2000
     
     return predictions.flatten()
 
