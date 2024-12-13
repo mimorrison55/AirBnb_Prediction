@@ -19,22 +19,21 @@ Our project focuses on predicting Airbnb prices for the next seven (7) days usin
 * Having a Streamlit account or similar service such AWS or Azure works
 
 ## SOURCE FILES
-1. `Data\LSTM` - contains the split-up calendar dataset (for GitHub storage purposes)
-2. `Data\XGBoost` - Contains the Listing Dataset with Distance features
-3. `Exploratory Data Analysis` - Contains plots and diagrams for the LSTM and XGBoost model
-4. `model_files` - Includes the scaler files utilized for training the model and deploying the application
-5. `LSTM_forecast.py` - Contains cleaning, building, training, and evaluation for LSTM
-6. `LSTM_model.h5` - Contains the trained LSTM model
-7. `XGBoost_prediction.py` - Contains cleaning, building, training, and evaluation for XGBoost
-8. `app.py` - Contains the Streamlit Application
-9. `change.python-version` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
-10. `pyproject.toml` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
-11. `requirements.txt` - Specifies the necessary packages for the application
-12. `runtime.txt` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
-13. `scaler_X.joblib` - Contains the predictor scalers for the XGBoost
-14. `scaler_y.joblib` - Contains the target variable scalers for the XGBoost
-15. `xgboost_model.joblib` - Contains the trained XGBoost model
-16. `xgboost_model.pkl` - Contains the trained XGBoost model
+1. `Listing_Data.zip` - Contains the Listing Dataset with Distance features
+2. `Exploratory Data Analysis` - Contains plots and diagrams for the LSTM and XGBoost model
+3. `model_files` - Includes the scaler files utilized for training the model and deploying the application
+4. `LSTM_forecast.py` - Contains cleaning, building, training, and evaluation for LSTM
+5. `LSTM_model.h5` - Contains the trained LSTM model
+6. `XGBoost_prediction.py` - Contains cleaning, building, training, and evaluation for XGBoost
+7. `app.py` - Contains the Streamlit Application
+8. `change.python-version` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
+9. `pyproject.toml` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
+10. `requirements.txt` - Specifies the necessary packages for the application
+11. `runtime.txt` - Contains the specified Python Version to run the Streamlit Application (3.11.10)
+12. `scaler_X.joblib` - Contains the predictor scalers for the XGBoost
+13. `scaler_y.joblib` - Contains the target variable scalers for the XGBoost
+14. `xgboost_model.joblib` - Contains the trained XGBoost model
+15. `xgboost_model.pkl` - Contains the trained XGBoost model
 
 ## CONTRIBUTIONS:
 1. Tiffany oversaw the development of the LSTM and XGBoost models, Streamlit application and deployment, and model details & Chapman Server in the white paper.
